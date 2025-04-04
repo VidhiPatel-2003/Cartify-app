@@ -34,7 +34,7 @@ const Footer = () => {
           </div>
         </div>
         <div className='flex flex-row items-center justify-center text-red-100'><AiOutlineCopyright /> 2025 Cartify. All rights reserved.</div>
-        <p>ds</p>
+
       </div>
     </>
   )
