@@ -10,12 +10,17 @@ import Orders from './Pages.tsx/Orders';
 import Navbar from './Components/Navbar';
 import Mainphoto from './Components/Mainphoto';
 import Footer from './Components/Footer';
+import Search from './Components/Search';
+import Signup from './Pages.tsx/Signup';
+import Product from './Pages.tsx/Product';
+import Myprofile from './Pages.tsx/Myprofile';
 
 function App() {
   return (
     <>
       <div className='px-4 sm:px-[5vw] md:px-[6vw] lg:px-[7vw] xl:px-[8vw] 2xl:px-[9vw]'>
         <Navbar />
+        <Search />
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/about' element={<About />} />
@@ -23,7 +28,10 @@ function App() {
           <Route path='/collection' element={<Collection />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
           <Route path='/orders' element={<Orders />} />
+          <Route path='/product/:productid' element={<Product />} />
+          <Route path='/myProfile' element={<Myprofile/>}/>
         </Routes>
         <Footer />
       </div>

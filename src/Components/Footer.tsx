@@ -9,7 +9,7 @@ import { AiOutlineCopyright } from "react-icons/ai";
 const Footer = () => {
   return (
     <>
-      <div className='flex flex-col  bg-gray-700 text-white border border-gray-100 mt-5'>
+      <footer className='flex flex-col  bg-gray-700 text-white border border-gray-100 mt-5  bottom-0'>
         <div className='flex flex-col sm:flex-row font-normal mt-6  mb-1 py-4 px-4 justify-around '>
           <div className='flex flex-col'>
             <div className='flex flex-row font-bold text-4xl '>
@@ -29,13 +29,13 @@ const Footer = () => {
             <p className='font-medium text-base'>Contact :</p>
             <ul className='mt-2'>
               <li><div className='flex flex-row items-center justify-center '><FaPhoneAlt className='text-[15px] mr-2' /> +91 180-1800-000</div></li>
-              <li><div className='flex flex-row items-center justify-center'><MdOutlineMail className='text-[19px] mr-2' /> cartif@gmail.com</div></li>
+              <li><div className='flex flex-row items-center justify-center'><MdOutlineMail className='text-[19px] mr-2' /> cartify@gmail.com</div></li>
             </ul>
           </div>
         </div>
         <div className='flex flex-row items-center justify-center text-red-100'><AiOutlineCopyright /> 2025 Cartify. All rights reserved.</div>
 
-      </div>
+      </footer>
     </>
   )
 }

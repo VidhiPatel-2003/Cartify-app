@@ -1,13 +1,39 @@
-import React, { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom';
+import React, { useState, useContext, useEffect } from 'react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { IoMdSearch } from "react-icons/io";
 import { FaRegUser } from "react-icons/fa";
 import { TbShoppingCartPlus } from "react-icons/tb";
 import { RiMenu2Fill } from "react-icons/ri";
 import { IoHeartOutline } from "react-icons/io5";
+import { ShopContext } from '../context/Shopcontext';
+import { signOut } from 'firebase/auth';
+import { auth } from '../Firebase/firebase';
+import Alert from './Alert';
+
 
 const Navbar: React.FC = () => {
   const [visible, setVisible] = useState<boolean>(false);
+  const [searchVisible, setSearchVisible] = useState<boolean>(false);
+
+  const { showSearch, setShowSearch, userInfo,
+    setUserInfo, isalert, setIsAlert } = useContext(ShopContext);
+
+
+  const location = useLocation();
+  useEffect(() => {
+
+    if (location.pathname.includes('collection')) {
+      setSearchVisible(true);
+    }
+    else {
+      setSearchVisible(false)
+    }
+  }, [location])
+
+  const handleLogout = async () => {
+    setIsAlert(true);
+  }
+
   return (
     <>
       <div className='flex items-center justify-between py-5 font-medium'>
@@ -32,9 +58,19 @@ const Navbar: React.FC = () => {
           </NavLink>
         </ul>
         <div className='flex items-center gap-6'>
-          <IoMdSearch className=' sm:text-[15px] md:text-[16px] lg:text-[17px] xl:text-[18px] 2xl:text-[19px]' />
+          {searchVisible ? <IoMdSearch className=' sm:text-[15px] md:text-[16px] lg:text-[17px] xl:text-[18px] 2xl:text-[19px]' onClick={() => setShowSearch(!showSearch)} /> : null}
           <div className='group relative'>
-            <FaRegUser className=' sm:text-[15px] md:text-[16px] lg:text-[17px] xl:text-[18px] 2xl:text-[19px]' />
+            <Link to='/login'>
+              <FaRegUser className=' sm:text-[15px] md:text-[16px] lg:text-[17px] xl:text-[18px] 2xl:text-[19px] cursor-pointer' />
+            </Link>
+            <div className='group-hover:block hidden absolute dropdown-menu right-0 pt-4'>
+              <div className='flex flex-col w-36 py-3 px-5 bg-slate-200 text-gray-600 rounded'>
+                <Link to='/myProfile'><p className='cursor-pointer hover:text-black'>My Profile</p></Link>
+                <p className='cursor-pointer hover:text-black'>Orders</p>
+                <p className='cursor-pointer hover:text-black' onClick={handleLogout}>Logout</p>
+              </div>
+              {isalert && <Alert />}
+            </div>
           </div>
           <div><IoHeartOutline className=' sm:text-[15px] md:text-[16px] lg:text-[17px] xl:text-[18px] 2xl:text-[19px]' /></div>
           <NavLink to='/cart'>

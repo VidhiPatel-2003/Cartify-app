@@ -15,7 +15,7 @@ const Bestcollection = () => {
   return (
     <>
       <Title text1='BEST' text2='Seller' />
-      <div className='grid grid-col-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 gap-y-3 mt-8'>
+      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 gap-y-3 mt-8'>
         {bestseller.map((item, index) => (
           <ProductItem key={index} id={item._id} name={item.name} image={item.image} price={item.price} />
         ))}
