@@ -3,7 +3,7 @@ import { ShopContext } from '../context/Shopcontext';
 import { useFormik } from 'formik';
 import { validation } from './Schema/Validation';
 import React, { useContext, useState } from 'react'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../Firebase/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
@@ -26,6 +26,7 @@ const initialValues = {
 
 const Signup = () => {
   const { formtype } = useContext(ShopContext);
+  const navigate = useNavigate();
 
   const { values, handleSubmit, handleChange, errors, touched, setFieldValue } = useFormik({
     initialValues: initialValues,
@@ -59,7 +60,7 @@ const Signup = () => {
         console.log(error);
         alert("Invalid email or password");
       }
-
+     navigate('/');
     }
   });
   const googlesignin = async () => {
@@ -171,8 +172,7 @@ const Signup = () => {
         </div>
         <button type='submit' className='w-full py-2 bg-gray-700 text-white font-semibold mt-3'>Sign Up</button>
         <button className='w-full py-2 bg-gray-700 text-white font-semibold mt-3 flex items-center justify-center ' onClick={googlesignin}><FcGoogle className='text-4xl px-2' />Sign Up with Google</button>
-        {/* <button type='submit' className='w-full py-2 bg-gray-700 text-white font-semibold'>Sign In</button>
-         <button type='submit' className='w-full py-2 bg-gray-700 text-white font-semibold'>Sign Up</button> */}
+       
       </form>
     </>
   )

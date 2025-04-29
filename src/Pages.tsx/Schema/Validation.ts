@@ -17,7 +17,7 @@ export const validation = yup.object<Validation>({
   name: yup.string().min(2),
   Phone: yup
     .string()
-    .min(9)
+    .min(10)
     .required("A phone number is required")
     .matches(phoneRegExp, "invalid phone no"),
   gender: yup.string().required("Required"),
