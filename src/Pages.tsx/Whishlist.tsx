@@ -10,6 +10,8 @@ import { ShopContext } from '../context/Shopcontext';
 import ProductItem from '../Components/ProductItem';
 import { RxCross1 } from "react-icons/rx";
 import { IoIosHeartEmpty } from "react-icons/io";
+import { useDispatch, useSelector } from 'react-redux';
+import { setWishlist, removeWhishlist } from '../Slice/EcommerceSlice';
 
 interface WhishlistProduct {
   id: string;
@@ -25,9 +27,11 @@ interface WhishlistProduct {
 
 const Whishlist = () => {
 
-  const [whishlist, setWhishlist] = useState<WhishlistProduct[]>([]);
   const navigate = useNavigate();
   const { currency, percentage } = useContext(ShopContext)
+  const dispatch = useDispatch();
+  const whishlistState = useSelector((state: any) => state.ecommerce.whishlist);
+  console.log("whislist state from redux", whishlistState);
 
 
   const getWhishlist = async (uid: string) => {
@@ -53,9 +57,12 @@ const Whishlist = () => {
         });
       });
 
-      setWhishlist(whishlistData);
+      dispatch(setWishlist(whishlistData));
+      // setWhishlist(whishlistData);
+
       console.log("Whishlist data:", whishlistData);
-      console.log("Whishlist state:", whishlist);
+      // console.log("Whishlist state:", whishlist);
+      // console.log("whislist state from redux", whishlistState);
     } catch (error) {
       console.log("getWhishlist error", error);
     }
@@ -77,10 +84,11 @@ const Whishlist = () => {
 
   const handleLikeDeletebutton = async (id: string) => {
     await deleteDoc(doc(db, "whishlist", id));
+    dispatch(removeWhishlist(id))
+
     console.log("successfully deleted from whishlist", id);
 
   }
-
 
 
   return (
@@ -88,9 +96,9 @@ const Whishlist = () => {
       <div className='text-2xl'>
         <Title text1={"My"} text2={"Wishlist"} />
       </div>
-      {whishlist.length > 0 ? (
+      {whishlistState.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 gap-y-3 mt-8" >
-          {whishlist.map((item) => (
+          {whishlistState.map((item: { id: string, productId: string, imageUrl: string, quantity: number, price: number, name: string, description: string, discount: number }) => (
 
             <div key={item.id} onClick={() => {
               navigate(`/product/${item.productId}`)

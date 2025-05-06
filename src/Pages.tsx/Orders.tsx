@@ -4,6 +4,8 @@ import { auth, db } from '../Firebase/firebase'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { PiMaskSadLight } from "react-icons/pi";
 import { ShopContext } from '../context/Shopcontext';
+import { setOrders } from '../Slice/EcommerceSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface Ordersinfo {
   size: any;
@@ -37,8 +39,10 @@ interface Cartid extends Carttype {
 
 const Orders: React.FC = () => {
 
-  const [showorder, setShowOrder] = useState<Ordersinfo[]>([]);
+  // const [showorder, setShowOrder] = useState<Ordersinfo[]>([]);
   const { currency, percentage } = useContext(ShopContext);
+  const dispatch = useDispatch();
+  const displayOrder = useSelector((state: any) => state.ecommerce.orders);
 
   const myOrder = async () => {
     try {
@@ -64,7 +68,8 @@ const Orders: React.FC = () => {
         });
       });
       console.log("orders", orders)
-      setShowOrder(orders);
+      // setShowOrder(orders);
+      dispatch(setOrders(orders));
 
     }
     catch (error) {
@@ -105,7 +110,7 @@ const Orders: React.FC = () => {
           <Title text1={'My'} text2={'Orders'} />
         </div>
         <div>
-          {showorder.length === 0 ? <div className='flex items-center justify-center h-[50vh] '><p className=' text text-4xl text-gray-700 flex items-center gap-5'> No Order Found <PiMaskSadLight className='font font-bold text text-5xl' /></p></div> : (showorder.map((item, index) =>
+          {displayOrder.length === 0 ? <div className='flex items-center justify-center h-[50vh] '><p className=' text text-4xl text-gray-700 flex items-center gap-5'> No Order Found <PiMaskSadLight className='font font-bold text text-5xl' /></p></div> : (displayOrder.map((item: { paymentMethod: string, status: string, totalAmount: number, cart: Cart[] }, index: number) =>
             <div key={index} className='flex flex-col justify-start items-start border m-2 p-2'>
               <p className='text-center text-lg text-gray-800 font font-semibold'>Payment Method: <span className='text text-base font font-semibold text-green-800'>{item.paymentMethod}</span></p>
               <p className='text-center text-lg text-gray-800 font font-semibold'>Status:<span className='text text-base font font-semibold text-red-700'> {item.status}</span></p>
@@ -133,7 +138,6 @@ const Orders: React.FC = () => {
                       <div className=' flex flex-row gap-2 text-lg text-gray-700 items-center justify-center font-medium'>Price :{productData.discount ? <div className=' flex flex-row gap-2 items-center justify-center '><p className=' text text-base font-medium'>{discountPrice}</p> <p className='line-through text font-medium text-sm text-red-800'>{productData.price}</p> <p className='text text-sm text-green-800 font-medium'>{productData.discount}{percentage} off</p></div> : <p>{productData.price}</p>}</div>
                       {cartitem.quantity > 1 ? <div className=' flex flex-row gap-2 text-lg text-gray-600 font-medium items-center '>Total Price :{productData.discount ? <p className='text text-base'>{totaldiscountprice}</p> : <p className='text text-base'>{totalprice}</p>}</div> : null}
                     </div>
-
                   </div>
                 );
               })}
