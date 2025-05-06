@@ -2,7 +2,6 @@ import Home from './Pages.tsx/Home';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import About from './Pages.tsx/About';
-
 import Collection from './Pages.tsx/Collection';
 import Contact from './Pages.tsx/Contact';
 import Login from './Pages.tsx/Login';

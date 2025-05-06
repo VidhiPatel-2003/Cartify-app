@@ -3,8 +3,10 @@ import { ShopContext } from '../context/Shopcontext'
 
 import { getDocs, collection, doc, updateDoc, increment, getDoc, setDoc, query, where, getDocFromCache } from 'firebase/firestore';
 import { auth, db } from '../Firebase/firebase';
-
+import { HiMiniShoppingBag } from "react-icons/hi2";
 import { toast } from 'react-toastify';
+import { assets } from '../assest/assets';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -29,6 +31,7 @@ interface Cartid extends Carttype {
 
 const Addcart = () => {
   const { currency, cartitem, setCartItem, countquantity, setCountQuantity, Deletecart, percentage, addcartdata, cartData, setCartData } = useContext(ShopContext);
+  const navigate = useNavigate();
   // const [cartData, setCartData] = useState<CartItemType[]>([]);
   const [addCartProduct, setAddCartProduct] = useState<Cartid[]>([]);
 
@@ -135,7 +138,7 @@ const Addcart = () => {
     <>
 
 
-      <div>
+      {cartData.length > 0 ? (<div>
         {cartData.map((item, index) => {
           const productData = addCartProduct.find(
             (product) => product._id === item.itemid
@@ -176,7 +179,16 @@ const Addcart = () => {
             </div>
           );
         })}
-      </div>
+      </div>) :
+        (<div>
+          {/* <img src='https://tampcol.com/public/assets/images/product_not_found2.png' /> */}
+          <div className='flex flex-col justify-center items-center h-[60vh]'>
+            <HiMiniShoppingBag className='text-[400px] text-gray-100 ' />
+            <div className='text-2xl font-medium my-2'>Cart is empty</div>
+            <p>You don't have any products in your Cart yet.</p>
+            <button className='bg-slate-600 w-52 h-14 mt-3 text-white' onClick={() => { navigate('/collection') }}>View Products</button>
+          </div>
+        </div>)}
 
     </>
   )

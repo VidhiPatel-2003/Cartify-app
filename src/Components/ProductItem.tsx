@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/Shopcontext';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { IoIosHeartEmpty } from "react-icons/io";
@@ -68,6 +68,28 @@ const ProductItem: React.FC<Propstype> = ({ id, name, image, price, description,
   }
 
 
+  const whishlistPresent = async (productId: string) => {
+    const user = auth.currentUser;
+    if (!user) {
+      navigate('/signup');
+    }
+    else {
+      // const likeProduct = `${user.uid}_likeproduct _ ${productId}`;
+      const q = query(collection(db, "whishlist"), where("id", "==", productId), where("uid", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        setOnLike(false);
+      } else {
+        setOnLike(true);
+      }
+    }
+  }
+
+  useEffect(() => {
+    whishlistPresent(id);
+  }, [id])
+
+
   return (
     <>
       {/* <Link to={`/product/${id}`} className='text-gray-600 cursor-pointer'> */}
@@ -76,7 +98,7 @@ const ProductItem: React.FC<Propstype> = ({ id, name, image, price, description,
         console.log('main function')
       }} style={{ position: 'relative', zIndex: 0 }} >
         <div className='  overflow-hidden '>
-          <img src={image} alt="" className='hover:scale-110  transaction ease-in-out w-[270px] h-[300px]' />
+          <img src={image} alt="" className='hover:scale-125  transaction-transform duration-100  ease-in-out w-[270px] h-[300px]' />
           <div style={{ display: "flex", alignItems: "center", borderRadius: "50%", top: 4, marginTop: "3px" }} onClick={(e) => {
             e.stopPropagation(); //  Prevent the click from going to the parent
             if (id) {
@@ -87,7 +109,7 @@ const ProductItem: React.FC<Propstype> = ({ id, name, image, price, description,
             }
           }} >
 
-            {onLike === true && id ? <FcLike className=' sm:text-[15px] md:text-[16px] lg:text-[17px] xl:text-[18px] 2xl:text-[19px] ' /> : <IoIosHeartEmpty className=' sm:text-[15px] md:text-[16px] lg:text-[17px] xl:text-[18px] 2xl:text-[19px] ' />}
+            {onLike === true ? <FcLike className=' sm:text-[15px] md:text-[16px] lg:text-[17px] xl:text-[18px] 2xl:text-[19px] ' /> : <IoIosHeartEmpty className=' sm:text-[15px] md:text-[16px] lg:text-[17px] xl:text-[18px] 2xl:text-[19px] ' />}
           </div>
         </div>
         {quantity === 0 ? <p className='text text-xl text-red-800 font-semibold'>Currently unavailable</p> : null}

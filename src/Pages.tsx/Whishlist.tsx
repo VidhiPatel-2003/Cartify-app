@@ -9,6 +9,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { ShopContext } from '../context/Shopcontext';
 import ProductItem from '../Components/ProductItem';
 import { RxCross1 } from "react-icons/rx";
+import { IoIosHeartEmpty } from "react-icons/io";
 
 interface WhishlistProduct {
   id: string;
@@ -122,7 +123,13 @@ const Whishlist = () => {
 
       ) : (
         <div>
-          <img src='https://tampcol.com/public/assets/images/product_not_found2.png' />
+          {/* <img src='https://tampcol.com/public/assets/images/product_not_found2.png' /> */}
+          <div className='flex flex-col justify-center items-center h-[60vh]'>
+            <IoIosHeartEmpty className='text-[400px] text-gray-100' />
+            <div className='text-2xl font-medium my-2'>Whishlist is empty</div>
+            <p>You don't have any products inyour whislist yet.</p>
+            <button className='bg-slate-600 w-52 h-14 mt-3 text-white' onClick={() => { navigate('/collection') }}>View Products</button>
+          </div>
         </div>
       )}
     </div>
