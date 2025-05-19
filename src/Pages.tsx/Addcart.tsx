@@ -175,7 +175,6 @@ const Addcart = () => {
                 </div>
               </div>
 
-
             </div>
           );
         })}

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FcGoogle } from "react-icons/fc";
 import { ShopContext } from '../context/Shopcontext';
 import { useFormik } from 'formik';
@@ -8,6 +8,10 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../Firebase/firebase';
 import { loginvalidation } from './Schema/Loginvalidation';
 import { getDoc, doc, setDoc, addDoc, collection } from 'firebase/firestore';
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
+
+import { getMessaging, getToken } from 'firebase/messaging';
 
 const initialValues = {
   name: '',
@@ -20,6 +24,9 @@ const initialValues = {
 const Login: React.FC = () => {
   const { formtype } = useContext(ShopContext);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+
 
   const { values, handleSubmit, handleChange, errors, touched } = useFormik({
     initialValues: initialValues,
@@ -36,8 +43,22 @@ const Login: React.FC = () => {
         );
         const user = auth.currentUser;
         console.log(user);
+        try {
+          let token = await getToken(messaging, {
+            vapidKey: "BEwnmk48dqFMX2MOz3ICzVeSxdGCqCG3vLXesV2GbnmL3I5q3AHau7BKXqc1VEoq1Zvrxg6or4bLVrS18g9l4FE",
+          })
+          console.log("login-token", token)
+          const timestamp = Date.now();
+          const tokenid = `${user?.uid}_devicToken_${timestamp}`
+          localStorage.setItem("Devicetokenid",tokenid);
+          await setDoc(doc(db, "Device-Token", tokenid), {
+            token: token,
+            userId: user?.uid,
+            tokenid:tokenid,
+          })
+        } catch (e) { return e; }
 
-        console.log("User sign in successfully");
+        // console.log("User sign in successfully");
       } catch (error) {
 
         console.log(error);
@@ -47,19 +68,42 @@ const Login: React.FC = () => {
     }
   })
 
-  const googleSignUp = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      signInWithPopup(auth, provider).then(async (res) => {
-        const user = res.user;
-        console.log(user)
-
-      })
-    }
-    catch (error) {
-      console.log(error);
-    }
+  const handleShowpassword = () => {
+    setShowPassword(!showPassword);
+    // alert(`clcik show password ${showPassword}`)
   }
+  const handleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+    // alert(`clcik show password ${showConfirmPassword}`)
+  }
+
+
+  const messaging = getMessaging();
+
+  // const pushDeviceToken = async () => {
+  //   let token = getToken(messaging, {
+  //     vapidKey: "BEwnmk48dqFMX2MOz3ICzVeSxdGCqCG3vLXesV2GbnmL3I5q3AHau7BKXqc1VEoq1Zvrxg6or4bLVrS18g9l4FE",
+  //   })
+  //   console.log("during loin token", token)
+  //   let user = auth.currentUser;
+  //   try {
+  //     if (!user) return;
+  //     if (user) {
+  //       const timestamp = Date.now();
+  //       const tokenid = `${user.uid}_devicToken_${timestamp}`
+  //       await setDoc(doc(db, "Device-Token", tokenid), {
+  //         token: token,
+  //         userId: user.uid,
+  //       })
+  //     }
+
+  //   } catch (e) { return e; }
+  // }
+
+  // useEffect(() => {
+  //   pushDeviceToken();
+  // }, [])
+
   return (
     <>
       <form className='flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-13 gap-4 text-gray-700 mb-40' onSubmit={handleSubmit} >
@@ -78,8 +122,9 @@ const Login: React.FC = () => {
         ) : (
           ""
         )}
+
         <label htmlFor='password' className='text-gray-800  mr-[300px] text-5x font-semibold'>Password :-</label>
-        <input name='password' value={values.password} type='password' onChange={handleChange} placeholder='Password' className='w-full py-2 px-3 border border-gray-400' required />
+        <div className=" w-full flex justify-between  items-center  py-2 px-3 border border-gray-400"><input name='password' value={values.password} type={showPassword ? 'text' : 'password'} onChange={handleChange} placeholder='Password' required className="outline-none" />{showPassword ? <button onClick={handleShowpassword}><FaEye /></button> : <button onClick={handleShowpassword} ><FaEyeSlash /></button>}</div>
         {errors.password && touched.password ? (
           <>
             <p>{errors.password}</p>
@@ -88,7 +133,7 @@ const Login: React.FC = () => {
           ""
         )}
         <label htmlFor='confirmpassword' className='text-gray-800  mr-[240px] text-5x font-semibold'>ConfirmPassword :-</label>
-        <input name='confirmpassword' value={values.confirmpassword} type='password' onChange={handleChange} placeholder='ConfirmPassword' className='w-full py-2 px-3 border border-gray-400' required />
+        <div className=" w-full flex justify-between  items-center  py-2 px-3 border border-gray-400"><input name='confirmpassword' value={values.confirmpassword} type={showConfirmPassword ? 'text' : 'password'} onChange={handleChange} placeholder='ConfirmPassword' required className="outline-none" />{showConfirmPassword ? <button onClick={handleShowConfirmPassword} ><FaEye /></button> : <button onClick={handleShowConfirmPassword} ><FaEyeSlash /></button>}</div>
         {errors.confirmpassword && touched.confirmpassword ? (
           <>
             <p>{errors.confirmpassword}</p>
@@ -101,7 +146,6 @@ const Login: React.FC = () => {
           <Link to='/signup'>Create account</Link>
         </div>
         <button type='submit' className='w-full py-2 bg-gray-700 text-white font-semibold mt-3'>Sign In</button>
-        {/* <button className='w-full py-2 bg-gray-700 text-white font-semibold mt-3 flex items-center justify-center'><FcGoogle className='text-4xl px-2' onClick={googleSignUp} />Sign in with Google</button> */}
 
       </form>
     </>

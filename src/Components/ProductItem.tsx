@@ -5,6 +5,7 @@ import { IoIosHeartEmpty } from "react-icons/io";
 import { auth, db } from '../Firebase/firebase';
 import { FcLike } from "react-icons/fc";
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { error } from 'console';
 
 interface Propstype {
   id: string;
@@ -57,11 +58,6 @@ const ProductItem: React.FC<Propstype> = ({ id, name, image, price, description,
         quantity: quantity,
         discount: discount,
         productId: productId,
-      }).then(() => {
-        console.log("product added to wishlist")
-      }).catch((error) => {
-        console.error("Error adding product to wishlist:", error);
-
       })
 
     }
@@ -71,7 +67,7 @@ const ProductItem: React.FC<Propstype> = ({ id, name, image, price, description,
   const whishlistPresent = async (productId: string) => {
     const user = auth.currentUser;
     if (!user) {
-      navigate('/signup');
+      return;
     }
     else {
       // const likeProduct = `${user.uid}_likeproduct _ ${productId}`;
@@ -122,7 +118,6 @@ const ProductItem: React.FC<Propstype> = ({ id, name, image, price, description,
           <p className='text-sm font-medium '>{currency}{price}</p>}</>}
       </div>
 
-      {/* </Link> */}
     </>
   )
 }

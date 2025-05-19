@@ -4,10 +4,13 @@ import { useFormik } from 'formik';
 import { validation } from './Schema/Validation';
 import React, { useContext, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
-import { auth, db } from "../Firebase/firebase";
+import { auth, db, messaging } from "../Firebase/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getDoc, doc, setDoc } from 'firebase/firestore';
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
+import { getToken } from "firebase/messaging";
 
 // interface Formdata {
 //   name: string;
@@ -27,6 +30,8 @@ const initialValues = {
 const Signup = () => {
   const { formtype } = useContext(ShopContext);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
   const { values, handleSubmit, handleChange, errors, touched, setFieldValue } = useFormik({
     initialValues: initialValues,
@@ -54,13 +59,28 @@ const Signup = () => {
             gender: values.gender,
           });
         }
+        try {
+          let token = await getToken(messaging, {
+            vapidKey: "BEwnmk48dqFMX2MOz3ICzVeSxdGCqCG3vLXesV2GbnmL3I5q3AHau7BKXqc1VEoq1Zvrxg6or4bLVrS18g9l4FE",
+          })
+          console.log("token-signup", token)
+
+          const timestamp = Date.now();
+          const tokenid = `${user?.uid}_devicToken_${timestamp}`
+          await setDoc(doc(db, "Device-Token", tokenid), {
+            token: token,
+            userId: user?.uid,
+            tokenid: tokenid,
+          })
+        } catch (e) { return e; }
+
         console.log("User Sign up successfully");
       } catch (error) {
 
         console.log(error);
         alert("Invalid email or password");
       }
-     navigate('/');
+      navigate('/');
     }
   });
   const googlesignin = async () => {
@@ -80,6 +100,17 @@ const Signup = () => {
       console.log(error);
     }
   }
+
+  const handleShowpassword = () => {
+    setShowPassword(!showPassword);
+    // alert(`clcik show password ${showPassword}`)
+  }
+  const handleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+    // alert(`clcik show password ${showConfirmPassword}`)
+  }
+
+
   return (
     <>
       <form className='flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-13 gap-4 text-gray-700 mb-40' onSubmit={handleSubmit} >
@@ -109,7 +140,7 @@ const Signup = () => {
           ""
         )}
         <label htmlFor='password' className='text-gray-800  mr-[300px] text-5x font-semibold'>Password :-</label>
-        <input name='password' value={values.password} type='password' onChange={handleChange} placeholder='Password' className='w-full py-2 px-3 border border-gray-400' required />
+        <div className=" w-full flex justify-between  items-center  py-2 px-3 border border-gray-400"><input name='password' value={values.password} type={showPassword ? 'text' : 'password'} onChange={handleChange} placeholder='Password' required className="outline-none" />{showPassword ? <button onClick={handleShowpassword}><FaEye /></button> : <button onClick={handleShowpassword} ><FaEyeSlash /></button>}</div>
         {errors.password && touched.password ? (
           <>
             <p>{errors.password}</p>
@@ -118,7 +149,7 @@ const Signup = () => {
           ""
         )}
         <label htmlFor='confirmpassword' className='text-gray-800  mr-[240px] text-5x font-semibold'>ConfirmPassword :-</label>
-        <input name='confirmpassword' value={values.confirmpassword} type='password' onChange={handleChange} placeholder='ConfirmPassword' className='w-full py-2 px-3 border border-gray-400' required />
+        <div className=" w-full flex justify-between  items-center  py-2 px-3 border border-gray-400"><input name='confirmpassword' value={values.confirmpassword} type={showConfirmPassword ? 'text' : 'password'} onChange={handleChange} placeholder='ConfirmPassword' required className="outline-none" />{showConfirmPassword ? <button onClick={handleShowConfirmPassword} ><FaEye /></button> : <button onClick={handleShowConfirmPassword} ><FaEyeSlash /></button>}</div>
         {errors.confirmpassword && touched.confirmpassword ? (
           <>
             <p>{errors.confirmpassword}</p>
@@ -172,7 +203,7 @@ const Signup = () => {
         </div>
         <button type='submit' className='w-full py-2 bg-gray-700 text-white font-semibold mt-3'>Sign Up</button>
         <button className='w-full py-2 bg-gray-700 text-white font-semibold mt-3 flex items-center justify-center ' onClick={googlesignin}><FcGoogle className='text-4xl px-2' />Sign Up with Google</button>
-       
+
       </form>
     </>
   )

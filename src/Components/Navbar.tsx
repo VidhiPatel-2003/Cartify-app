@@ -17,13 +17,12 @@ const Navbar: React.FC = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
   const [cartvisible, setCartVisible] = useState<boolean>(false);
-  const navigate = useNavigate();
-
+ 
 
   const { showSearch, setShowSearch, userInfo,
     setUserInfo, isalert, setIsAlert, countquantity } = useContext(ShopContext);
 
-    const {productid} = useParams<{ productid: string }>();
+  const { productid } = useParams<{ productid: string }>();
 
 
   const location = useLocation();
@@ -51,7 +50,6 @@ const Navbar: React.FC = () => {
 
   const handleLogout = async () => {
     setIsAlert(true);
-    navigate('/')
   }
 
   return (

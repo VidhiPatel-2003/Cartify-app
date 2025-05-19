@@ -110,7 +110,7 @@ const Collection: React.FC = () => {
             <p className='mb-3 text-sm font-medium'>Category</p>
             <div className='flex flex-col text-sm text-gray-600 font-light'>
               <p className='flex gap-2'>
-                <input type='radio' name='category' className='cursor-pointer' value={'Men'} onClick={() => togglecategory(1)} />Men             
+                <input type='radio' name='category' className='cursor-pointer' value={'Men'} onClick={() => togglecategory(1)} />Men
               </p>
               <p className='flex gap-2'>
                 <input type='radio' name='category' className='cursor-pointer' value={'Woman'} onClick={() => togglecategory(2)} />Woman
@@ -125,10 +125,10 @@ const Collection: React.FC = () => {
             <p className='mb-3 text-sm font-medium'>TYPE</p>
             <div className='flex flex-col text-sm text-gray-600 font-light'>
               <p className='flex gap-2'>
-                <input type='radio' name='subcategory' className='cursor-pointer' value={'Topwear'} onClick={() => togglesubcategory(1)} />Topwear            
+                <input type='radio' name='subcategory' className='cursor-pointer' value={'Topwear'} onClick={() => togglesubcategory(1)} />Topwear
               </p>
               <p className='flex gap-2'>
-                <input type='radio' name='subcategory' className='cursor-pointer' value={'Bottomwear'} onClick={() => togglesubcategory(2)} />Bottomwear              
+                <input type='radio' name='subcategory' className='cursor-pointer' value={'Bottomwear'} onClick={() => togglesubcategory(2)} />Bottomwear
               </p>
             </div>
           </div>
@@ -174,6 +174,6 @@ const Collection: React.FC = () => {
 
 export default Collection
 
-function a(a: Productid, b: Productid): number {
-  throw new Error('Function not implemented.');
-}
+// function a(a: Productid, b: Productid): number {
+//   throw new Error('Function not implemented.');
+// }

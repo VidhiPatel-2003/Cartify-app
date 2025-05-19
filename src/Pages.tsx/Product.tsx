@@ -113,7 +113,7 @@ const Product: React.FC = () => {
                     key={index}
                     onClick={() => setSize(item)}
 
-                    className={`font font-semibold text-base lg:text-lg  sm:w-[30px] p-1 w-[40px] md:w-[35px] md:p-1.5 lg:w-[40px] mx-1 md:mx-2  cursor-pointer flex items-center justify-center ${size === item ? " border border-5 border-blue-600 text-blue-600 " : "border border-gray-200"
+                    className={`font font-semibold text-base lg:text-lg   p-1  md:py-1.5 md:px-4  mx-1 md:mx-2  cursor-pointer flex items-center justify-center ${size === item ? " border border-5 border-blue-600 text-blue-600 " : "border border-gray-200"
                       }`}
                   >
                     {item.toUpperCase()}
@@ -138,4 +138,5 @@ const Product: React.FC = () => {
 export default Product
 
 
-
+// className={`font font-semibold text-base lg:text-lg  sm:w-[30px] p-1 w-[40px] md:w-[35px] md:p-1.5 lg:w-[40px] mx-1 md:mx-2  cursor-pointer flex items-center justify-center ${size === item ? " border border-5 border-blue-600 text-blue-600 " : "border border-gray-200"
+// }`}

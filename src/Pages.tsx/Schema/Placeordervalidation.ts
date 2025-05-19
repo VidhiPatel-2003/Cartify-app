@@ -25,9 +25,5 @@ export const placeordervalidation = yup.object<Placeordervaldiation>({
   address: yup.string().min(5).required("must be mention address"),
   city: yup.string().min(2).required("mustbe mention city"),
   state: yup.string().min(2).required("mustbe mention state"),
-  pincode: yup
-    .string()
-    .min(2)
-    .required("mustbe mention pincode")
-    .matches(pincoderegex, "invalid pincode"),
+  pincode: yup.string().min(2).required("mustbe mention pincode"),
 });

@@ -6,6 +6,9 @@ import { PiMaskSadLight } from "react-icons/pi";
 import { ShopContext } from '../context/Shopcontext';
 import { setOrders } from '../Slice/EcommerceSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { Rating } from 'react-simple-star-rating'
+import { TiStar } from "react-icons/ti";
 
 interface Ordersinfo {
   size: any;
@@ -39,11 +42,15 @@ interface Cartid extends Carttype {
 
 const Orders: React.FC = () => {
 
+  const [rateapp, setRateApp] = useState<boolean>(false);
+  const { setIsAlert } = useContext(ShopContext)
+
   // const [showorder, setShowOrder] = useState<Ordersinfo[]>([]);
   const { currency, percentage } = useContext(ShopContext);
   const dispatch = useDispatch();
   const displayOrder = useSelector((state: any) => state.ecommerce.orders);
 
+  const [rating, setRating] = useState<{ [key: number]: number }>({});
   const myOrder = async () => {
     try {
       const user = auth.currentUser;
@@ -102,7 +109,32 @@ const Orders: React.FC = () => {
   }, [])
 
 
+  const getStatus = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "approved":
+        return "text-blue-700";
 
+      case "pending":
+        return "text-yellow-700";
+
+      case "delivered":
+        return "text-green-500";
+
+      case "cancelled":
+        return "text-red-700";
+
+      default:
+        return "text-black";
+    }
+  }
+
+  console.log(rateapp, "rate")
+  const stars = Array(5).fill(0);
+
+  const handleClickStar = (orderIndex: number, value: number) => {
+    setRating(prev => ({ ...prev, [orderIndex]: value }));
+  };
+  console.log("rationg", rating)
   return (
     <>
       <div className='border-t mt-10'>
@@ -112,8 +144,9 @@ const Orders: React.FC = () => {
         <div>
           {displayOrder.length === 0 ? <div className='flex items-center justify-center h-[50vh] '><p className=' text text-4xl text-gray-700 flex items-center gap-5'> No Order Found <PiMaskSadLight className='font font-bold text text-5xl' /></p></div> : (displayOrder.map((item: { paymentMethod: string, status: string, totalAmount: number, cart: Cart[] }, index: number) =>
             <div key={index} className='flex flex-col justify-start items-start border m-2 p-2'>
+
               <p className='text-center text-lg text-gray-800 font font-semibold'>Payment Method: <span className='text text-base font font-semibold text-green-800'>{item.paymentMethod}</span></p>
-              <p className='text-center text-lg text-gray-800 font font-semibold'>Status:<span className='text text-base font font-semibold text-red-700'> {item.status}</span></p>
+              <p className='text-center text-lg text-gray-800 font font-semibold'>Status:<span className={`text text-base font font-semibold ${getStatus(item.status)}`}> {item.status}</span></p>
               <p className='text-center text-lg text-gray-800 font font-semibold'>Total Amount: <span className='text text-base font font-semibold text-gray-500'>{item.totalAmount}</span></p>
               {item.cart.map((cartitem, index) => {
                 const productData = addCartProduct.find(
@@ -141,6 +174,27 @@ const Orders: React.FC = () => {
                   </div>
                 );
               })}
+              {/* {item.status === "delivered" ? <Link to='/rate'><button className='bg-slate-600 text-white p-2 my-2' onClick={() => setIsAlert(true)}>Rate our Product</button></Link> : null} */}
+              {item.status === "delivered" ?
+                // <div className='flex flex-row'><Rating
+                //   onClick={handleRating}
+                //   onPointerEnter={onPointerEnter}
+                //   onPointerLeave={onPointerLeave}
+                //   onPointerMove={onPointerMove}
+                //   className='flex flex-row'
+                // /></div>
+                <div className='flex flex-row my-2'>{stars.map((_, starindex) => {
+                  return (
+                    <><div ><TiStar
+                      key={starindex}
+                      size={24}
+                      values={String(rating)}
+                      onChange={(e) => setRating(prev => ({ ...prev, [index]: (e.target as HTMLInputElement).valueAsNumber }))}
+                      onClick={() => handleClickStar(index, starindex + 1)}
+                      className={` flex flex-row text-4xl ${(rating[index] || 0) > starindex ? `text-orange-500` : `text-gray-400`}`} /></div></>
+                  )
+                })}</div>
+                : null}
             </div>
           ))}
         </div>

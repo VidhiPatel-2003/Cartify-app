@@ -10,7 +10,8 @@ import Title from '../Components/Title';
 import Addcart from './Addcart';
 import CartTotal from '../Components/CartTotal';
 import { ShopContext } from '../context/Shopcontext';
-import { write } from 'fs';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAddress, deleteAddress } from '../Slice/EcommerceSlice';
 
 interface Product {
   name: string;
@@ -48,10 +49,13 @@ const initialValues = {
 }
 const Placeorder: React.FC = () => {
   const { cartData, totalAmount } = useContext(ShopContext)
-  const [placeorderuserinfo, setPlaceOrderUserInfo] = useState<Placeorderinfo[]>([]);
+  // const [placeorderuserinfo, setPlaceOrderUserInfo] = useState<Placeorderinfo[]>([]);
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedAddress, setSelectedAddress] = useState<Placeorderinfo | null>(null);
   const [allCollection, setAllCollection] = useState<Productid[]>([]);
+
+  const dispatch = useDispatch();
+  const AddressInfo = useSelector((state: { ecommerce: { address: Placeorderinfo[] } }) => state.ecommerce.address)
 
   const navigate = useNavigate();
   const { values, handleChange, handleSubmit, errors, touched, setValues } = useFormik({
@@ -63,6 +67,7 @@ const Placeorder: React.FC = () => {
       try {
         const user = auth.currentUser;
         if (!user) {
+          console.log("placeorder-0");
           navigate('/signup')
         }
         if (user) {
@@ -88,6 +93,7 @@ const Placeorder: React.FC = () => {
     const user = auth.currentUser;
 
     if (!user) {
+      console.log("placeorder-9");
       navigate('/signup')
     }
 
@@ -141,8 +147,9 @@ const Placeorder: React.FC = () => {
           addressId: addressId,
         });
       });
-      console.log("before address", placeorderuserinfo)
-      setPlaceOrderUserInfo(addresses);
+      // console.log("before address", placeorderuserinfo)
+      // setPlaceOrderUserInfo(addresses);
+      dispatch(setAddress(addresses));
 
     } catch (error) {
       console.log("get placeorder error", error);
@@ -151,15 +158,13 @@ const Placeorder: React.FC = () => {
   useEffect(() => {
     getaddress();
   }, [])
-  console.log("userinfo for order", placeorderuserinfo)
-
 
 
   const handlePlaceorder = async () => {
     try {
 
       const user = auth.currentUser;
-      if (!user) { navigate('/signup') }
+      if (!user) { console.log("placeorder"); navigate('/signup') }
 
       if (user) {
         const timestamp = Date.now();
@@ -180,11 +185,14 @@ const Placeorder: React.FC = () => {
             })
           }
         }
+
+
         await setDoc(orderRef, {
           uid: user.uid,
           orderId: orderId,
           cart: cartData,
           addressId: selectedAddress?.addressId,
+
           totalAmount: totalAmount,
           address: {
             address: selectedAddress?.address,
@@ -199,6 +207,7 @@ const Placeorder: React.FC = () => {
           OrderDate: new Date(),
           createdAt: new Date().toISOString(),
         });
+
       }
       await clearCart();
 
@@ -238,6 +247,18 @@ const Placeorder: React.FC = () => {
     dataCollection();
   }, [])
 
+  const handleDeleteAddress = (): void => {
+
+    localStorage.setItem("SelectedAdressid", selectedAddress?.addressId || '')
+    let addressid = localStorage.getItem("SelectedAdressid")
+  
+    if (addressid) {
+      deleteDoc(doc(db, "address", addressid))
+      dispatch(deleteAddress(addressid))
+      localStorage.removeItem(addressid);
+    }
+  }
+
   return (
     <>
       <div className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14  min-h-[80vh] border-t  '>
@@ -246,11 +267,12 @@ const Placeorder: React.FC = () => {
             <Title text1={"Delivery"} text2={'Information'} />
           </div>
           <div className='flex flex-col gap-3  '>
-            {placeorderuserinfo.length > 0 ? (<><div>{placeorderuserinfo.map((item) => (
+            {AddressInfo.length > 0 ? (<><div >{AddressInfo.map((item) => (
               <><div className='flex gap-3 my-2' key={item.addressId}><input type='radio' name='address' id={item.addressId} className='flex flex-row' onClick={() => setSelectedAddress(item)} />
-                <label htmlFor={item.addressId}><div className='flex flex-col border px-4 py-2  w-[600px] h-auto'>
+                <label htmlFor={item.addressId}><div className='flex flex-col border px-4 py-2  w-[600px] h-auto' style={{ position: 'relative', zIndex: 0 }} >
                   <div className=' text text-lg  text-gray-700 font font-bold'>{item.name} {item.Phone}</div>
-                  <div>{item.address} ,{item.city} ,{item.state}-{item.pincode}</div>
+                  <div>{item.address} ,{item.city} ,{item.state}-{item.pincode}</div><br /><br />
+                  <div className='text-white text-xl font-semibold bg-orange-600 w-1/4 flex items-center justify-center my-2 h-10' style={{ position: 'absolute', zIndex: 999999, bottom: 0 }} onClick={handleDeleteAddress} >Remove</div>
                 </div></label>
               </div>
 
